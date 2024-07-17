@@ -1,0 +1,58 @@
+<body>
+  <div class="content" *ngIf="weather">
+  <div class="column">
+    <div class="left-side">
+      <div class="search-container" [formGroup]="searchForm">
+        <input type="text" class="search-input" placeholder="Enter City" formControlName="city">
+        <button class="search-button" (click)="searchWeather()">Search</button>
+        <button class="search-button show-location-button" (click)="showLocation()">Show Current Location</button>
+      </div>
+
+      <h1 class="city-name">{{ currentCity }}</h1>
+      <div class="temperature">
+        <p>Temperature: {{ selectedTemperatureUnit === 'celsius' ? weather.current.temp_c + '°C' : weather.current.temp_f + '°F' }}</p>
+      </div>
+      <div class="temperature-options">
+        <label for="temperatureUnit">Temperature Unit:</label>
+        <select id="temperatureUnit" [(ngModel)]="selectedTemperatureUnit">
+          <option value="celsius">Celsius (°C)</option>
+          <option value="fahrenheit">Fahrenheit (°F)</option>
+        </select>
+      </div>
+
+      <div class="data-options">
+        <label for="dataToShow">Additional data to show:</label>
+        <select id="dataToShow" [(ngModel)]="selectedDataToShow">
+          <option value="heatIndex">Heat Index</option>
+          <option value="windSpeed">Wind Speed</option>
+          <option value="humidity">Humidity</option>
+        </select>
+      </div>
+
+      <div class="weather-info">
+        <img [src]="weather.current.condition.icon" alt="Weather Image" class="weather-icon">
+        <p>Weather Condition: {{ weather.current.condition.text }}</p>
+        <div class="additional-info">
+          <p *ngIf="selectedDataToShow === 'heatIndex'">Heat Index: {{ weather.current.heatindex_c }}°C</p>
+          <p *ngIf="selectedDataToShow === 'windSpeed'">Wind Speed: {{ weather.current.wind_kph }} kph</p>
+          <p *ngIf="selectedDataToShow === 'humidity'">Humidity: {{ weather.current.humidity }}%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-side" *ngIf="weather">
+      <div class="forecast-container">
+        <div class="forecast-card" *ngFor="let day of forecast">
+          <h3>Date: {{ day.date }}</h3>
+          <img [src]="day.day.condition.icon" alt="Weather Image" class="weather-icon">
+          <p>Max Temperature: {{ selectedTemperatureUnit === 'celsius' ? day.day.maxtemp_c + '°C' : day.day.maxtemp_f + '°F' }}</p>
+          <p>Min Temperature: {{ selectedTemperatureUnit === 'celsius' ? day.day.mintemp_c + '°C' : day.day.mintemp_f + '°F' }}</p>
+          <p>Condition: {{ day.day.condition.text }}</p>
+          <p>Wind Speed: {{ day.day.maxwind_kph }} kph</p>
+        </div>
+      </div>
+    </div>    
+  </div>
+</div>
+
+</body>
