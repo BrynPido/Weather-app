@@ -1,14 +1,13 @@
-<body>
-  <div class="content" *ngIf="weather">
+<div class="content" *ngIf="weather">
   <div class="column">
     <div class="left-side">
       <div class="search-container" [formGroup]="searchForm">
-        <input type="text" class="search-input" placeholder="Enter City" formControlName="city">
+        <input type="text" class="search-input" placeholder="Enter City" formControlName="city" (keyup.enter)="searchWeather()">
         <button class="search-button" (click)="searchWeather()">Search</button>
         <button class="search-button show-location-button" (click)="showLocation()">Show Current Location</button>
       </div>
 
-      <h1 class="city-name">{{ currentCity }}</h1>
+      <h1 class="city-name">{{ currentCity | titlecase }}</h1>
       <div class="temperature">
         <p>Temperature: {{ selectedTemperatureUnit === 'celsius' ? weather.current.temp_c + '°C' : weather.current.temp_f + '°F' }}</p>
       </div>
@@ -38,12 +37,27 @@
           <p *ngIf="selectedDataToShow === 'humidity'">Humidity: {{ weather.current.humidity }}%</p>
         </div>
       </div>
+      <span class="gif">
+        <img [src]="weatherGif" [ngClass]="{'keep-safe-gif': isRainy, 'hot-day-gif': !isRainy}" alt="Weather GIF">
+      </span>
+    </div>
+
+    <!-- Display message when city is not found -->
+    <div *ngIf="cityNotFound" class="overlay">
+      <div class="city-not-found">
+        <div class="error-dialog">
+          <h3>City Not Found</h3>
+          <p>Sorry, there is no weather information available for the city you entered.</p>
+          <p>The city might not exist. Please try again with a different city name.</p>
+          <button (click)="toggleErrorDialog()">Close</button>
+        </div>
+      </div>
     </div>
 
     <div class="right-side" *ngIf="weather">
       <div class="forecast-container">
         <div class="forecast-card" *ngFor="let day of forecast">
-          <h3>Date: {{ day.date }}</h3>
+          <h3>{{ day.date | date:'longDate' }}</h3>
           <img [src]="day.day.condition.icon" alt="Weather Image" class="weather-icon">
           <p>Max Temperature: {{ selectedTemperatureUnit === 'celsius' ? day.day.maxtemp_c + '°C' : day.day.maxtemp_f + '°F' }}</p>
           <p>Min Temperature: {{ selectedTemperatureUnit === 'celsius' ? day.day.mintemp_c + '°C' : day.day.mintemp_f + '°F' }}</p>
@@ -54,5 +68,3 @@
     </div>    
   </div>
 </div>
-
-</body>

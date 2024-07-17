@@ -23,10 +23,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   currentCity: string = 'Manila';
   selectedCity: string = 'any';
   selectedDataToShow: string = 'heatIndex';
+  weatherGif: any
+  isRainy!: boolean;
+  isSunny!: boolean;
+  cityNotFound: boolean = false; // Flag to indicate if city not found
 
   constructor(
     private fb: FormBuilder,
-    private weatherService: WeatherService,
+    private weatherService: WeatherService
   ) {}
 
   ngOnInit() {
@@ -38,31 +42,43 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   searchWeatherForCity(city: string) {
-    this.weatherService.searchWeather(city).subscribe(
+    // Replace spaces with underscores
+    const formattedCity = city.replace(/\s+/g, '_');
+    const encodedCity = encodeURIComponent(formattedCity);
+    
+    this.weatherService.searchWeather(encodedCity).subscribe(
       (resp) => {
         console.log('Weather API response:', resp, city);
         if (resp && resp.forecast && resp.forecast.forecastday) {
           this.weather = resp;
           this.currentCity = city;
           this.forecast = resp.forecast.forecastday;
+          this.updateWeatherGif();  // Update GIF based on weather condition
+          this.cityNotFound = false; // Reset city not found flag
         } else {
           console.error('Invalid API response format:', resp);
+          this.cityNotFound = true; // Set city not found flag
         }
       },
       (error) => {
         console.error('Error fetching weather data:', error);
+        this.cityNotFound = true; // Set city not found flag
       }
     );
   }
-
+  
   searchWeather() {
     const city = this.searchForm.get('city')!.value;
     console.log('Searching weather for:', city);
     if (city) {
       this.searchWeatherForCity(city);
     }
-  }
+  }  
   
+  toggleErrorDialog() {
+    this.cityNotFound = false; // Close the error dialog
+  }
+
   showLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -81,27 +97,40 @@ export class HomeComponent implements OnInit, OnDestroy {
                 this.weather = resp;
                 this.currentCity = resp.location.name;
                 this.forecast = resp.forecast.forecastday;
+                this.updateWeatherGif();  // Update GIF based on weather condition
+                this.cityNotFound = false; // Reset city not found flag
               } else {
                 console.error('Invalid API response format:', resp);
                 alert('Invalid API response format. Please try again later.');
+                this.cityNotFound = true; // Set city not found flag
               }
             },
             (error) => {
               console.error('Error fetching weather data:', error);
               alert('Error fetching weather data. Please try again later.');
+              this.cityNotFound = true; // Set city not found flag
             }
           );
         },
         (error) => {
           console.error('Error getting location:', error);
           alert('Error getting your location. Please check your browser settings.');
+          this.cityNotFound = true; // Set city not found flag
         }
       );
     } else {
       console.error('Geolocation is not supported by this browser.');
       alert('Geolocation is not supported by this browser.');
+      this.cityNotFound = true; // Set city not found flag
     }
   }  
+
+  updateWeatherGif() {
+    const condition = this.weather.current.condition.text.toLowerCase();
+    const rainyConditions = ['rain', 'drizzle', 'thunderstorm', 'shower'];
+    this.isRainy = rainyConditions.some(rainCondition => condition.includes(rainCondition));
+    this.weatherGif = this.isRainy ? '../../assets/KeepSafe.gif' : '../../assets/HotDay.gif';
+  }
 
   ngOnDestroy() {
     this.subscriptions.forEach((sub: { unsubscribe: () => any; }) => sub.unsubscribe());
