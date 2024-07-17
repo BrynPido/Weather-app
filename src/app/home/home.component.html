@@ -46,9 +46,10 @@
     <div *ngIf="cityNotFound" class="overlay">
       <div class="city-not-found">
         <div class="error-dialog">
+          <img class="notfoundgif" src="../../assets/NotFound.gif" alt="City Not Fount">
           <h3>City Not Found</h3>
           <p>Sorry, there is no weather information available for the city you entered.</p>
-          <p>The city might not exist. Please try again with a different city name.</p>
+          <p>City might not exist. Please try again with a different city name.</p>
           <button (click)="toggleErrorDialog()">Close</button>
         </div>
       </div>
