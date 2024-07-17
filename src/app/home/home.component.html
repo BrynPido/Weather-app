@@ -19,22 +19,13 @@
         </select>
       </div>
 
-      <div class="data-options">
-        <label for="dataToShow">Additional data to show:</label>
-        <select id="dataToShow" [(ngModel)]="selectedDataToShow">
-          <option value="heatIndex">Heat Index</option>
-          <option value="windSpeed">Wind Speed</option>
-          <option value="humidity">Humidity</option>
-        </select>
-      </div>
-
       <div class="weather-info">
         <img [src]="weather.current.condition.icon" alt="Weather Image" class="weather-icon">
         <p>Weather Condition: {{ weather.current.condition.text }}</p>
         <div class="additional-info">
-          <p *ngIf="selectedDataToShow === 'heatIndex'">Heat Index: {{ weather.current.heatindex_c }}°C</p>
-          <p *ngIf="selectedDataToShow === 'windSpeed'">Wind Speed: {{ weather.current.wind_kph }} kph</p>
-          <p *ngIf="selectedDataToShow === 'humidity'">Humidity: {{ weather.current.humidity }}%</p>
+          <p *ngIf="weather.current.heatindex_c">Heat Index: {{ weather.current.heatindex_c }}°C</p>
+          <p>Wind Speed: {{ weather.current.wind_kph }} kph</p>
+          <p>Humidity: {{ weather.current.humidity }}%</p>
         </div>
       </div>
       <span class="gif">
@@ -46,7 +37,7 @@
     <div *ngIf="cityNotFound" class="overlay">
       <div class="city-not-found">
         <div class="error-dialog">
-          <img class="notfoundgif" src="../../assets/NotFound.gif" alt="City Not Fount">
+          <img class="notfoundgif" src="../../assets/NotFound.gif" alt="City Not Found">
           <h3>City Not Found</h3>
           <p>Sorry, there is no weather information available for the city you entered.</p>
           <p>City might not exist. Please try again with a different city name.</p>
@@ -64,6 +55,8 @@
           <p>Min Temperature: {{ selectedTemperatureUnit === 'celsius' ? day.day.mintemp_c + '°C' : day.day.mintemp_f + '°F' }}</p>
           <p>Condition: {{ day.day.condition.text }}</p>
           <p>Wind Speed: {{ day.day.maxwind_kph }} kph</p>
+          <p *ngIf="day.day.heatindex_c">Heat Index: {{ day.day.heatindex_c }}°C</p>
+          <p>Humidity: {{ day.day.humidity }}%</p>
         </div>
       </div>
     </div>    
